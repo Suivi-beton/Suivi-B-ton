@@ -31,14 +31,15 @@
       var(--bg);
     color: var(--text);
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
     min-height: 100vh;
-    padding: 24px;
+    padding: 24px 32px;
   }
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
   h1,h2,h3, .num, .eyebrow{ font-family:'Oswald', sans-serif; letter-spacing: 0.02em; }
   .mono{ font-family:'IBM Plex Mono', monospace; }
 
-  .wrap{ max-width: 1400px; margin: 0 auto; }
+  .wrap{ max-width: 100%; margin: 0 auto; }
 
   /* header */
   header{
@@ -62,28 +63,28 @@
   }
   header .subtitle{ color: rgba(244,241,232,0.65); }
   .eyebrow{
-    text-transform: uppercase; font-size: 12px; letter-spacing: 0.1em;
+    text-transform: uppercase; font-size: 13.5px; letter-spacing: 0.1em;
     color: rgba(244,241,232,0.8); font-weight:600; margin-bottom:10px;
     display:flex; align-items:center; gap:2px;
   }
-  h1{ font-size: 26px; font-weight:700; }
-  .subtitle{ color: var(--text-dim); font-size:13px; margin-top:4px; }
+  h1{ font-size: 30px; font-weight:700; }
+  .subtitle{ color: var(--text-dim); font-size:15px; margin-top:4px; }
   .header-right{ display:flex; align-items:center; gap:14px; flex-wrap: wrap; }
   .status-pill{
     display:flex; align-items:center; gap:8px;
     background: rgba(74,222,128,0.12); border:1px solid rgba(74,222,128,0.35);
-    padding: 6px 12px; border-radius: 20px; font-size:12px; color: var(--green);
+    padding: 6px 12px; border-radius: 20px; font-size:13.5px; color: var(--green);
   }
   .status-dot{ width:8px; height:8px; border-radius:50%; background: var(--green); box-shadow: 0 0 8px var(--green); }
-  .last-update{ font-size:11px; color: rgba(244,241,232,0.55); text-align:right; }
+  .last-update{ font-size:12.5px; color: rgba(244,241,232,0.55); text-align:right; }
   header h1{ color:#FFFFFF; }
   .eyebrow-badge{
     display:inline-flex; align-items:center; gap:8px; background: var(--orange); color:#1B2A17;
-    font-weight:700; font-size:12px; padding:5px 10px; border-radius:6px; letter-spacing:0.08em;
+    font-weight:700; font-size:13.5px; padding:5px 10px; border-radius:6px; letter-spacing:0.08em;
   }
   .btn-refresh{
     background: var(--orange); color:#0F1B2D; border:none; font-weight:700;
-    padding: 10px 18px; border-radius: 8px; cursor:pointer; font-size:13px;
+    padding: 10px 18px; border-radius: 8px; cursor:pointer; font-size:15px;
     display:flex; align-items:center; gap:8px; transition: transform .15s ease, box-shadow .15s ease;
     font-family:'Inter', sans-serif;
   }
@@ -104,11 +105,11 @@
     box-shadow: 0 2px 6px rgba(46,123,214,0.08);
   }
   .filter-box label{
-    font-size:13px; font-weight:700; color: var(--text); white-space:nowrap;
+    font-size:15px; font-weight:700; color: var(--text); white-space:nowrap;
   }
   .filter-box select{
     border:1px solid var(--border); border-radius:7px; padding:8px 12px;
-    font-family:'Inter', sans-serif; font-size:13.5px; font-weight:600; color: var(--text);
+    font-family:'Inter', sans-serif; font-size:15.5px; font-weight:600; color: var(--text);
     background: var(--card); cursor:pointer; min-width:180px;
     appearance:none;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%236B7A93'/></svg>");
@@ -130,35 +131,50 @@
     position:absolute; width:10px; height:10px; border-top:2px solid var(--orange); border-left:2px solid var(--orange);
     top:8px; left:8px; opacity:0.6;
   }
-  .stat-label{ font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color: var(--text-dim); margin-bottom:10px; }
-  .stat-value{ font-size:26px; font-weight:700; }
-  .stat-value .unit{ font-size:13px; color: var(--text-dim); font-weight:500; margin-left:4px; }
-  .stat-sub{ font-size:12px; margin-top:6px; }
+  .stat-label{ font-size:12.5px; text-transform:uppercase; letter-spacing:0.08em; color: var(--text-dim); margin-bottom:10px; }
+  .stat-value{ font-size:30px; font-weight:700; }
+  .stat-value .unit{ font-size:15px; color: var(--text-dim); font-weight:500; margin-left:4px; }
+  .stat-sub{ font-size:14px; margin-top:6px; }
   .good{ color: var(--green); } .bad{ color: var(--red); } .warn{ color: var(--yellow); }
 
   /* chef cards */
-  .section-title{ margin: 30px 0 14px; font-size:14px; text-transform:uppercase; letter-spacing:0.12em; color: var(--text-dim); display:flex; align-items:center; gap:10px;}
+  .section-title{ margin: 30px 0 14px; font-size:16px; text-transform:uppercase; letter-spacing:0.12em; color: var(--text-dim); display:flex; align-items:center; gap:10px;}
   .section-title::after{ content:""; flex:1; height:1px; background: var(--border); }
 
   .chef-card{
     background: var(--card); border:1px solid var(--border); border-radius: 14px;
     padding: 20px 22px; margin-bottom: 16px;
-    display:grid; grid-template-columns: 260px 1fr; gap: 22px; align-items:center;
+    display:grid; grid-template-columns: 300px 1fr; gap: 22px; align-items:center;
   }
   @media(max-width: 900px){ .chef-card{ grid-template-columns: 1fr; } }
+  /* Mode "un seul conducteur filtré" : stats en haut, graphique en dessous, en grand */
+  .chef-card.single{
+    grid-template-columns: 1fr;
+  }
+  .chef-card.single .chart-box{
+    height: 380px;
+    margin-top: 6px;
+  }
+  .chef-card.single .chef-stats{
+    grid-template-columns: repeat(6, 1fr);
+  }
+  @media(max-width: 1000px){
+    .chef-card.single .chef-stats{ grid-template-columns: repeat(3, 1fr); }
+  }
   .chef-id{
     width:12px;height:12px;border-radius:50%;
     border: none;
   }
   .chef-head{ display:flex; align-items:center; gap:10px; margin-bottom:14px; }
-  .chef-name{ font-size:16px; font-weight:700; }
-  .chef-stats{ display:grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
-  .chef-stat-label{ font-size:10px; color: var(--text-dim); text-transform:uppercase; letter-spacing:0.06em; }
-  .chef-stat-value{ font-family:'IBM Plex Mono', monospace; font-size:15px; font-weight:600; margin-top:2px; }
+  .chef-name{ font-size:19px; font-weight:700; }
+  .chef-deadline{ font-size:13px; color: var(--text-dim); margin-left:auto; font-family:'IBM Plex Mono', monospace; }
+  .chef-stats{ display:grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px 14px; }
+  .chef-stat-label{ font-size:12px; color: var(--text-dim); text-transform:uppercase; letter-spacing:0.06em; }
+  .chef-stat-value{ font-family:'IBM Plex Mono', monospace; font-size:18px; font-weight:600; margin-top:2px; }
   .progress-ring-wrap{ display:flex; align-items:center; gap:14px; margin-top:14px; }
   .progress-bar-bg{ flex:1; height:8px; border-radius:4px; background: var(--card-2); overflow:hidden; }
   .progress-bar-fill{ height:100%; border-radius:4px; background: linear-gradient(90deg, var(--orange), var(--yellow)); }
-  .progress-pct{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:14px; min-width:42px; text-align:right; }
+  .progress-pct{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:16px; min-width:42px; text-align:right; }
   .chart-box{ height: 190px; position:relative; }
 
   .loading, .error-box{
@@ -171,7 +187,7 @@
   .dot-loader span:nth-child(2){ animation-delay:.15s;} .dot-loader span:nth-child(3){ animation-delay:.3s;}
   @keyframes bounce{ 0%,80%,100%{transform:scale(0.6); opacity:.5;} 40%{transform:scale(1); opacity:1;} }
 
-  footer{ text-align:center; color: var(--text-dim); font-size:11px; margin-top:30px; padding-bottom:10px; }
+  footer{ text-align:center; color: var(--text-dim); font-size:13px; margin-top:30px; padding-bottom:10px; }
 </style>
 </head>
 <body>
@@ -233,16 +249,120 @@
 // =====================================================
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzBtScloELx5ZPJpbKrJCUr9xZYu7Yna4frfqPDFUlzVEwJooAy3alxKuKNdVEc_02jbQ/exec";
 
-const CHEFS = ["BOUHOU", "HAMADA", "NABLI", "AIT ALI"];
+const CHEFS = ["BOUHOU", "HAMADA", "NABLI", "AIT ALI", "OBAMA+KARTER"];
 const CHEF_COLORS = {
   "BOUHOU": "#C99A2E",
   "HAMADA": "#D8433A",
   "NABLI": "#2E7BD6",
-  "AIT ALI": "#0E2A46"
+  "AIT ALI": "#0E2A46",
+  "OBAMA+KARTER": "#7B5EA7"
 };
 const CHART_COLORS = {
   prevu: "#2E7BD6",
   realise: "#1FA560"
+};
+
+// Cadence cible (m³/jour) par conducteur — valeurs fixes
+const CADENCE_CIBLE = {
+  "BOUHOU": 243,
+  "AIT ALI": 171,
+  "NABLI": 86,
+  "HAMADA": 57,
+  "OBAMA+KARTER": 143
+};
+
+// Date de fin prévue par conducteur — utilisée uniquement pour tracer
+// la courbe "Prévu projeté" jusqu'à ce point sur le graphique
+const DEADLINES = {
+  "BOUHOU":  "2026-12-05",
+  "HAMADA":  "2026-10-10",
+  "NABLI":   "2026-10-17",
+  "AIT ALI": "2026-11-28",
+  "OBAMA+KARTER": "2026-12-05"
+};
+
+// Les graphiques n'affichent l'historique qu'à partir de cette date
+// (les totaux/KPI, eux, restent calculés depuis le tout début du projet)
+const CHART_START_DATE = "2026-07-01";
+
+// Courbe "Prévu" réelle (planning cible hebdomadaire cumulé), extraite de
+// la feuille "P8b-Scénario Cadences" du fichier Planning_Béton.xlsx
+const PLANNING_PREVU = {
+  "BOUHOU": [
+    {"date":"2026-06-20","value":62699.25},{"date":"2026-06-27","value":64399.25},
+    {"date":"2026-07-04","value":66099.25},{"date":"2026-07-11","value":67799.25},
+    {"date":"2026-07-18","value":69499.25},{"date":"2026-07-25","value":71199.25},
+    {"date":"2026-08-01","value":72899.25},{"date":"2026-08-08","value":74599.25},
+    {"date":"2026-08-15","value":76299.25},{"date":"2026-08-22","value":77999.25},
+    {"date":"2026-08-29","value":79699.25},{"date":"2026-09-05","value":81399.25},
+    {"date":"2026-09-12","value":83099.25},{"date":"2026-09-19","value":84799.25},
+    {"date":"2026-09-26","value":86499.25},{"date":"2026-10-03","value":88199.25},
+    {"date":"2026-10-10","value":89899.25},{"date":"2026-10-17","value":91599.25},
+    {"date":"2026-10-24","value":93299.25},{"date":"2026-10-31","value":94999.25},
+    {"date":"2026-11-07","value":96699.25},{"date":"2026-11-14","value":98399.25},
+    {"date":"2026-11-21","value":100099.25},{"date":"2026-11-28","value":101799.25},
+    {"date":"2026-12-05","value":102302.0}
+  ],
+  "AIT ALI": [
+    {"date":"2026-06-20","value":39732.64},{"date":"2026-06-27","value":40932.64},
+    {"date":"2026-07-04","value":42132.64},{"date":"2026-07-11","value":43332.64},
+    {"date":"2026-07-18","value":44532.64},{"date":"2026-07-25","value":45732.64},
+    {"date":"2026-08-01","value":46932.64},{"date":"2026-08-08","value":48132.64},
+    {"date":"2026-08-15","value":49332.64},{"date":"2026-08-22","value":50532.64},
+    {"date":"2026-08-29","value":51732.64},{"date":"2026-09-05","value":52932.64},
+    {"date":"2026-09-12","value":54132.64},{"date":"2026-09-19","value":55332.64},
+    {"date":"2026-09-26","value":56532.64},{"date":"2026-10-03","value":57732.64},
+    {"date":"2026-10-10","value":58932.64},{"date":"2026-10-17","value":60132.64},
+    {"date":"2026-10-24","value":61332.64},{"date":"2026-10-31","value":62532.64},
+    {"date":"2026-11-07","value":63732.64},{"date":"2026-11-14","value":64932.64},
+    {"date":"2026-11-21","value":66132.64},{"date":"2026-11-28","value":66165.0},
+    {"date":"2026-12-05","value":66165.0}
+  ],
+  "NABLI": [
+    {"date":"2026-06-20","value":22779.28},{"date":"2026-06-27","value":23379.28},
+    {"date":"2026-07-04","value":23979.28},{"date":"2026-07-11","value":24579.28},
+    {"date":"2026-07-18","value":25179.28},{"date":"2026-07-25","value":25779.28},
+    {"date":"2026-08-01","value":26379.28},{"date":"2026-08-08","value":26979.28},
+    {"date":"2026-08-15","value":27579.28},{"date":"2026-08-22","value":28179.28},
+    {"date":"2026-08-29","value":28779.28},{"date":"2026-09-05","value":29379.28},
+    {"date":"2026-09-12","value":29979.28},{"date":"2026-09-19","value":30579.28},
+    {"date":"2026-09-26","value":31179.28},{"date":"2026-10-03","value":31779.28},
+    {"date":"2026-10-10","value":32379.28},{"date":"2026-10-17","value":32817.0},
+    {"date":"2026-10-24","value":32817.0},{"date":"2026-10-31","value":32817.0},
+    {"date":"2026-11-07","value":32817.0},{"date":"2026-11-14","value":32817.0},
+    {"date":"2026-11-21","value":32817.0},{"date":"2026-11-28","value":32817.0},
+    {"date":"2026-12-05","value":32817.0}
+  ],
+  "HAMADA": [
+    {"date":"2026-06-20","value":157.37},{"date":"2026-06-27","value":557.37},
+    {"date":"2026-07-04","value":957.37},{"date":"2026-07-11","value":1357.37},
+    {"date":"2026-07-18","value":1757.37},{"date":"2026-07-25","value":2157.37},
+    {"date":"2026-08-01","value":2557.37},{"date":"2026-08-08","value":2957.37},
+    {"date":"2026-08-15","value":3357.37},{"date":"2026-08-22","value":3757.37},
+    {"date":"2026-08-29","value":4157.37},{"date":"2026-09-05","value":4557.37},
+    {"date":"2026-09-12","value":4957.37},{"date":"2026-09-19","value":5357.37},
+    {"date":"2026-09-26","value":5757.37},{"date":"2026-10-03","value":6157.37},
+    {"date":"2026-10-10","value":6486.0},{"date":"2026-10-17","value":6486.0},
+    {"date":"2026-10-24","value":6486.0},{"date":"2026-10-31","value":6486.0},
+    {"date":"2026-11-07","value":6486.0},{"date":"2026-11-14","value":6486.0},
+    {"date":"2026-11-21","value":6486.0},{"date":"2026-11-28","value":6486.0},
+    {"date":"2026-12-05","value":6486.0}
+  ],
+  "OBAMA+KARTER": [
+    {"date":"2026-06-20","value":9161.86},{"date":"2026-06-27","value":10161.86},
+    {"date":"2026-07-04","value":11161.86},{"date":"2026-07-11","value":12161.86},
+    {"date":"2026-07-18","value":13161.86},{"date":"2026-07-25","value":14161.86},
+    {"date":"2026-08-01","value":15161.86},{"date":"2026-08-08","value":16161.86},
+    {"date":"2026-08-15","value":17161.86},{"date":"2026-08-22","value":18161.86},
+    {"date":"2026-08-29","value":19161.86},{"date":"2026-09-05","value":20161.86},
+    {"date":"2026-09-12","value":21161.86},{"date":"2026-09-19","value":22161.86},
+    {"date":"2026-09-26","value":23161.86},{"date":"2026-10-03","value":24161.86},
+    {"date":"2026-10-10","value":25161.86},{"date":"2026-10-17","value":26161.86},
+    {"date":"2026-10-24","value":27161.86},{"date":"2026-10-31","value":28161.86},
+    {"date":"2026-11-07","value":29161.86},{"date":"2026-11-14","value":30161.86},
+    {"date":"2026-11-21","value":31161.86},{"date":"2026-11-28","value":32161.86},
+    {"date":"2026-12-05","value":32201.0}
+  ]
 };
 
 let charts = {};
@@ -264,6 +384,90 @@ function fmtDateShort(iso){
   return `${d}/${m}`;
 }
 
+function fmtDateFR(isoDate){
+  const [y,m,d] = isoDate.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+/**
+ * Nombre de jours restants entre aujourd'hui et une date limite (yyyy-MM-dd).
+ * Minimum 1 pour éviter une division par zéro si la date est dépassée.
+ */
+/**
+ * Interpole linéairement la valeur "Prévu" à une date donnée, à partir
+ * des points hebdomadaires du planning (PLANNING_PREVU).
+ */
+function interpolePrevu(planningPoints, dateISO){
+  if(!planningPoints || planningPoints.length === 0) return 0;
+  const t = new Date(dateISO + "T00:00:00").getTime();
+  const pts = planningPoints;
+
+  if(t <= new Date(pts[0].date + "T00:00:00").getTime()) return pts[0].value;
+  if(t >= new Date(pts[pts.length-1].date + "T00:00:00").getTime()) return pts[pts.length-1].value;
+
+  for(let i=0; i<pts.length-1; i++){
+    const t1 = new Date(pts[i].date + "T00:00:00").getTime();
+    const t2 = new Date(pts[i+1].date + "T00:00:00").getTime();
+    if(t >= t1 && t <= t2){
+      const ratio = (t - t1) / (t2 - t1);
+      return pts[i].value + ratio * (pts[i+1].value - pts[i].value);
+    }
+  }
+  return pts[pts.length-1].value;
+}
+
+/**
+ * Cadence (m³/jour) calculée uniquement sur les 7 DERNIERS JOURS
+ * CALENDAIRES (pas une moyenne sur N relevés) : compare le dernier
+ * point connu à celui d'il y a ~7 jours, et divise par le nombre
+ * de jours réellement écoulés entre les deux.
+ */
+function calcCadenceDerniereSemaine(chartData, chef){
+  if(!chartData || chartData.length < 2) return 0;
+  const dernier = chartData[chartData.length-1];
+  const dateFin = dernier.dateISO;
+  const valFin = dernier.realise[chef] || 0;
+
+  // Cherche le point le plus proche de 7 jours avant le dernier relevé
+  const cibleMs = new Date(dateFin + "T00:00:00").getTime() - 7*86400000;
+  let ref = chartData[0];
+  for(let i=0; i<chartData.length-1; i++){
+    if(new Date(chartData[i].dateISO + "T00:00:00").getTime() <= cibleMs){
+      ref = chartData[i];
+    }
+  }
+  const valDebut = ref.realise[chef] || 0;
+  const jours = joursEntre(ref.dateISO, dateFin);
+  if(jours <= 0) return 0;
+  return (valFin - valDebut) / jours;
+}
+
+function joursEntre(dateISO1, dateISO2){
+  const d1 = new Date(dateISO1 + "T00:00:00");
+  const d2 = new Date(dateISO2 + "T00:00:00");
+  return Math.round((d2 - d1) / 86400000);
+}
+
+function joursRestants(deadlineISO){
+  const today = new Date();
+  today.setHours(0,0,0,0);
+  const deadline = new Date(deadlineISO + "T00:00:00");
+  const diffMs = deadline - today;
+  const jours = Math.ceil(diffMs / 86400000);
+  return jours;
+}
+
+/**
+ * Cadence cible (m³/jour) nécessaire pour finir le Reste avant la date limite.
+ * Se recalcule automatiquement chaque jour (le Reste diminue, les jours
+ * restants aussi) — pas de valeur figée à mettre à jour manuellement.
+ */
+function calcCadenceCible(reste, deadlineISO){
+  const jours = joursRestants(deadlineISO);
+  if(jours <= 0) return reste; // deadline dépassée -> tout reste à faire "aujourd'hui"
+  return reste / jours;
+}
+
 function buildChefSelectOptions(){
   if(selectOptionsBuilt) return;
   const sel = document.getElementById('chefSelect');
@@ -280,6 +484,22 @@ function buildChefSelectOptions(){
 function selectChef(chef){
   selectedChef = chef;
   if(lastData) render(lastData); // ré-affiche instantanément, sans re-fetch
+}
+
+/**
+ * Cadence réelle moyenne (m³/jour) calculée sur les N derniers relevés
+ * d'une série cumulée donnée.
+ */
+function calcCadenceReelle(series, maxPoints){
+  maxPoints = maxPoints || 7;
+  const n = series.length;
+  if(n < 2) return 0;
+  const span = Math.min(maxPoints, n-1);
+  const deltas = [];
+  for(let i = n-span; i<n; i++){
+    deltas.push(series[i] - series[i-1]);
+  }
+  return deltas.reduce((a,b)=>a+b,0)/deltas.length;
 }
 
 async function loadData(){
@@ -324,62 +544,70 @@ async function loadData(){
 function render(data){
   document.getElementById('content').dataset.loaded = "1";
 
-  // ---- totals across all chefs, per day (toujours global, non filtré) ----
-  const totalRealiseSeries = data.map(d => CHEFS.reduce((s,c)=> s + (d.realise[c]||0), 0));
-  const totalPrevu = CHEFS.reduce((s,c)=> s + (data[data.length-1].prevu[c]||0), 0);
+  // Liste des conducteurs à prendre en compte : selon le filtre sélectionné
+  const chefsAffiches = selectedChef === 'ALL' ? CHEFS : [selectedChef];
+
+  // ---- totaux — filtrés selon le conducteur sélectionné ----
+  const totalRealiseSeries = data.map(d => chefsAffiches.reduce((s,c)=> s + (d.realise[c]||0), 0));
+  const totalPrevu = chefsAffiches.reduce((s,c)=> s + (data[data.length-1].prevu[c]||0), 0);
   const totalRealise = totalRealiseSeries[totalRealiseSeries.length-1];
   const avancementGlobal = totalPrevu > 0 ? (totalRealise/totalPrevu*100) : 0;
+  const resteGlobal = totalPrevu - totalRealise;
 
-  // cadence: average daily delta over last 7 data points
-  let cadence = 0;
-  const n = totalRealiseSeries.length;
-  if(n >= 2){
-    const span = Math.min(7, n-1);
-    const deltas = [];
-    for(let i = n-span; i<n; i++){
-      deltas.push(totalRealiseSeries[i] - totalRealiseSeries[i-1]);
-    }
-    cadence = deltas.reduce((a,b)=>a+b,0)/deltas.length;
-  }
+  // Cadence cible = somme des cadences cibles fixes des conducteurs affichés
+  const cadenceCibleGlobale = chefsAffiches.reduce((s,c) => s + (CADENCE_CIBLE[c]||0), 0);
 
-  // ---- summary cards ----
+  // ---- summary cards — toujours affichées, filtrées selon le conducteur sélectionné ----
   const summaryGrid = document.getElementById('summaryGrid');
-  const reste = totalPrevu - totalRealise;
+  summaryGrid.style.display = '';
   summaryGrid.innerHTML = `
     ${statCard("Total prévu", fmtNum(totalPrevu), "m³", "Objectif du projet")}
     ${statCard("Total réalisé", fmtNum(totalRealise), "m³", "Cumulé à ce jour")}
-    ${statCard("Reste", fmtNum(reste), "m³", "À réaliser")}
+    ${statCard("Reste", fmtNum(resteGlobal), "m³", "À réaliser")}
     ${statCard("Avancement global", avancementGlobal.toFixed(1), "%", "Du projet", avancementGlobal>=95?"good":avancementGlobal>=80?"warn":"bad")}
-    ${statCard("Cadence actuelle", fmtNum(cadence), "m³/jour", "Moyenne 7 derniers jours")}
+    ${statCard("Cadence cible", fmtNum(cadenceCibleGlobale), "m³/jour", "Pour tenir les délais")}
   `;
 
   // ---- per-chef cards (filtrées selon le menu déroulant) ----
   const chefGrid = document.getElementById('chefGrid');
   chefGrid.innerHTML = "";
 
-  const chefsAffiches = selectedChef === 'ALL' ? CHEFS : [selectedChef];
-
   chefsAffiches.forEach((chef, idx) => {
     const prevu = data[data.length-1].prevu[chef] || 0;
-    const realiseSeries = data.map(d => d.realise[chef] || 0);
-    const realise = realiseSeries[realiseSeries.length-1];
-    const ecartChef = realise - prevu;
+    const realiseSeriesFull = data.map(d => d.realise[chef] || 0);
+    const realise = realiseSeriesFull[realiseSeriesFull.length-1];
+    const reste = prevu - realise;
     const pct = prevu>0 ? (realise/prevu*100) : 0;
 
+    // Cadence cible fixe (valeur donnée par toi, inchangée)
+    const deadline = DEADLINES[chef];
+    const cadenceCible = CADENCE_CIBLE[chef] || 0;
+    // Cadence réelle du conducteur (moyenne des 7 derniers relevés)
+    const cadenceReelle = Math.max(0, calcCadenceReelle(realiseSeriesFull, 7));
+
+    // Quand un seul conducteur est filtré, les grandes cartes du haut affichent
+    // déjà les mêmes chiffres -> on n'affiche pas le bloc de stats en double ici
+    const afficherStatsCarte = chefsAffiches.length > 1;
+
     const card = document.createElement('div');
-    card.className = 'chef-card';
+    card.className = 'chef-card' + (chefsAffiches.length === 1 ? ' single' : '');
     card.innerHTML = `
       <div>
         <div class="chef-head">
           <div class="chef-id" style="background:${CHEF_COLORS[chef]||'#999'}"></div>
           <div class="chef-name">${chef}</div>
+          <div class="chef-deadline">Fin prévue : ${fmtDateFR(deadline)}</div>
         </div>
+        ${afficherStatsCarte ? `
         <div class="chef-stats">
           <div><div class="chef-stat-label">Prévu</div><div class="chef-stat-value">${fmtNum(prevu)} m³</div></div>
           <div><div class="chef-stat-label">Réalisé</div><div class="chef-stat-value">${fmtNum(realise)} m³</div></div>
-          <div><div class="chef-stat-label">Reste</div><div class="chef-stat-value ${ecartChef>=0?'good':'bad'}">${ecartChef>=0?'+':''}${fmtNum(ecartChef)} m³</div></div>
+          <div><div class="chef-stat-label">Reste</div><div class="chef-stat-value">${fmtNum(reste)} m³</div></div>
           <div><div class="chef-stat-label">Avancement</div><div class="chef-stat-value">${pct.toFixed(1)}%</div></div>
+          <div><div class="chef-stat-label">Cadence cible</div><div class="chef-stat-value">${fmtNum(cadenceCible)} m³/j</div></div>
+          <div><div class="chef-stat-label">Cadence actuelle</div><div class="chef-stat-value ${cadenceReelle>=cadenceCible?'good':'bad'}">${fmtNum(cadenceReelle)} m³/j</div></div>
         </div>
+        ` : ''}
         <div class="progress-ring-wrap">
           <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${Math.min(pct,100)}%"></div></div>
           <div class="progress-pct">${pct.toFixed(0)}%</div>
@@ -389,31 +617,80 @@ function render(data){
     `;
     chefGrid.appendChild(card);
 
+    // ── Données du graphique : uniquement à partir de CHART_START_DATE ──
+    const chartData = data.filter(d => d.dateISO >= CHART_START_DATE);
+    const realiseSeries = chartData.map(d => d.realise[chef] || 0);
+    const labelsHist = chartData.map(d => fmtDateShort(d.dateISO));
+
+    // Point de départ de la projection = dernier point réel connu
+    const lastPoint = chartData.length
+      ? { dateISO: chartData[chartData.length-1].dateISO, valeur: realiseSeries[realiseSeries.length-1] }
+      : { dateISO: CHART_START_DATE, valeur: 0 };
+
+    // Ajoute un point final "deadline" à l'axe X, pour pouvoir y tracer
+    // la projection (et prolonger la ligne Prévu jusque-là aussi)
+    const labels = [...labelsHist, fmtDateShort(deadline)];
+
+    // Prévu : vraie courbe issue du planning (P8b-Scénario Cadences),
+    // interpolée à chaque date affichée + au point deadline
+    const planningChef = PLANNING_PREVU[chef] || [];
+    const prevuDates = [...chartData.map(d => d.dateISO), deadline];
+    const prevuPoints = prevuDates.map(dISO => interpolePrevu(planningChef, dISO));
+
+    // Réalisé : uniquement les vraies valeurs connues, rien sur le point deadline (pas de donnée future)
+    const realisePoints = [...realiseSeries, null];
+
+    // Cadence de la DERNIÈRE SEMAINE uniquement (7 derniers jours calendaires,
+    // pas une moyenne sur plusieurs relevés) — utilisée pour la projection
+    const cadenceDerniereSemaine = Math.max(0, calcCadenceDerniereSemaine(chartData, chef));
+
+    // Prévu projeté : ligne pointillée UNIQUEMENT entre le dernier point réel
+    // et la deadline, calculée à partir de la cadence de la dernière semaine
+    const joursProjection = Math.max(0, joursEntre(lastPoint.dateISO, deadline));
+    const valeurProjetee = lastPoint.valeur + cadenceDerniereSemaine * joursProjection;
+    const projectePoints = labels.map((lbl, i) => {
+      if(i === labelsHist.length - 1) return lastPoint.valeur; // point de raccord (dernier réel)
+      if(i === labels.length - 1) return valeurProjetee;        // point deadline
+      return null;
+    });
+
     const ctx = document.getElementById(`chart-${idx}`).getContext('2d');
     if(charts[idx]) charts[idx].destroy();
     charts[idx] = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: data.map(d => fmtDateShort(d.dateISO)),
+        labels: labels,
         datasets: [
           {
-            label: 'Objectif',
-            data: data.map(()=> prevu),
+            label: 'Prévu',
+            data: prevuPoints,
             borderColor: CHART_COLORS.prevu,
             borderDash: [6,4],
             pointRadius: 0,
             borderWidth: 2,
-            tension: 0
+            tension: 0.1
           },
           {
             label: 'Réalisé',
-            data: realiseSeries,
+            data: realisePoints,
             borderColor: CHEF_COLORS[chef] || CHART_COLORS.realise,
             backgroundColor: (CHEF_COLORS[chef] || CHART_COLORS.realise) + '1A',
             fill: true,
             pointRadius: 0,
             borderWidth: 2.5,
-            tension: 0.25
+            tension: 0.25,
+            spanGaps: false
+          },
+          {
+            label: 'Prévu projeté (cadence dernière semaine)',
+            data: projectePoints,
+            borderColor: '#D8433A',
+            backgroundColor: 'transparent',
+            borderDash: [3,3],
+            pointRadius: 0,
+            borderWidth: 2,
+            tension: 0,
+            spanGaps: true
           }
         ]
       },
