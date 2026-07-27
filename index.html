@@ -92,6 +92,31 @@
   .spin{ animation: spin 0.9s linear infinite; }
   @keyframes spin{ to{ transform: rotate(360deg); } }
 
+  /* filter bar — menu déroulant conducteur */
+  .filter-bar{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    margin-top:16px;
+  }
+  .filter-box{
+    display:flex; align-items:center; gap:10px;
+    background: var(--card); border:1.5px solid var(--blue);
+    border-radius: 10px; padding: 10px 16px;
+    box-shadow: 0 2px 6px rgba(46,123,214,0.08);
+  }
+  .filter-box label{
+    font-size:13px; font-weight:700; color: var(--text); white-space:nowrap;
+  }
+  .filter-box select{
+    border:1px solid var(--border); border-radius:7px; padding:8px 12px;
+    font-family:'Inter', sans-serif; font-size:13.5px; font-weight:600; color: var(--text);
+    background: var(--card); cursor:pointer; min-width:180px;
+    appearance:none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%236B7A93'/></svg>");
+    background-repeat:no-repeat; background-position: right 12px center;
+    padding-right: 30px;
+  }
+  .filter-box select:focus{ outline:none; border-color: var(--blue); }
+
   /* summary cards */
   .summary-grid{
     display:grid; grid-template-columns: repeat(5, 1fr); gap:14px; margin-top: 20px;
@@ -167,6 +192,16 @@
     </div>
   </header>
 
+  <!-- Filtre conducteur (menu déroulant) -->
+  <div class="filter-bar">
+    <div class="filter-box">
+      <label for="chefSelect">Conducteur :</label>
+      <select id="chefSelect" onchange="selectChef(this.value)">
+        <option value="ALL">Tous les conducteurs</option>
+      </select>
+    </div>
+  </div>
+
   <div id="loadingBox" class="loading">
     <div class="dot-loader"><span></span><span></span><span></span></div>
     <div style="margin-top:10px;">Chargement des données depuis le Google Sheet…</div>
@@ -211,6 +246,9 @@ const CHART_COLORS = {
 };
 
 let charts = {};
+let lastData = null;
+let selectedChef = 'ALL';
+let selectOptionsBuilt = false;
 
 function fmtNum(n){
   if (n === undefined || n === null || isNaN(n)) return "—";
@@ -224,6 +262,24 @@ function fmtDateShort(iso){
   if(parts.length !== 3) return iso;
   const [y, m, d] = parts;
   return `${d}/${m}`;
+}
+
+function buildChefSelectOptions(){
+  if(selectOptionsBuilt) return;
+  const sel = document.getElementById('chefSelect');
+  CHEFS.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c;
+    sel.appendChild(opt);
+  });
+  sel.value = selectedChef;
+  selectOptionsBuilt = true;
+}
+
+function selectChef(chef){
+  selectedChef = chef;
+  if(lastData) render(lastData); // ré-affiche instantanément, sans re-fetch
 }
 
 async function loadData(){
@@ -243,6 +299,8 @@ async function loadData(){
     const data = await res.json();
     if(!Array.isArray(data) || data.length === 0) throw new Error("Aucune donnée reçue (vérifie les noms d'onglets).");
 
+    lastData = data; // gardé en mémoire pour filtrer sans re-télécharger
+    buildChefSelectOptions();
     render(data);
 
     document.getElementById('loadingBox').style.display = 'none';
@@ -266,11 +324,10 @@ async function loadData(){
 function render(data){
   document.getElementById('content').dataset.loaded = "1";
 
-  // ---- totals across all chefs, per day ----
+  // ---- totals across all chefs, per day (toujours global, non filtré) ----
   const totalRealiseSeries = data.map(d => CHEFS.reduce((s,c)=> s + (d.realise[c]||0), 0));
   const totalPrevu = CHEFS.reduce((s,c)=> s + (data[data.length-1].prevu[c]||0), 0);
   const totalRealise = totalRealiseSeries[totalRealiseSeries.length-1];
-  const ecart = totalRealise - totalPrevu;
   const avancementGlobal = totalPrevu > 0 ? (totalRealise/totalPrevu*100) : 0;
 
   // cadence: average daily delta over last 7 data points
@@ -287,19 +344,22 @@ function render(data){
 
   // ---- summary cards ----
   const summaryGrid = document.getElementById('summaryGrid');
+  const reste = totalPrevu - totalRealise;
   summaryGrid.innerHTML = `
     ${statCard("Total prévu", fmtNum(totalPrevu), "m³", "Objectif du projet")}
     ${statCard("Total réalisé", fmtNum(totalRealise), "m³", "Cumulé à ce jour")}
-    ${statCard("Écart global", (ecart>=0?"+":"") + fmtNum(ecart), "m³", ecart>=0 ? "En avance" : "En retard", ecart>=0?"good":"bad")}
+    ${statCard("Reste", fmtNum(reste), "m³", "À réaliser")}
     ${statCard("Avancement global", avancementGlobal.toFixed(1), "%", "Du projet", avancementGlobal>=95?"good":avancementGlobal>=80?"warn":"bad")}
     ${statCard("Cadence actuelle", fmtNum(cadence), "m³/jour", "Moyenne 7 derniers jours")}
   `;
 
-  // ---- per-chef cards ----
+  // ---- per-chef cards (filtrées selon le menu déroulant) ----
   const chefGrid = document.getElementById('chefGrid');
   chefGrid.innerHTML = "";
 
-  CHEFS.forEach((chef, idx) => {
+  const chefsAffiches = selectedChef === 'ALL' ? CHEFS : [selectedChef];
+
+  chefsAffiches.forEach((chef, idx) => {
     const prevu = data[data.length-1].prevu[chef] || 0;
     const realiseSeries = data.map(d => d.realise[chef] || 0);
     const realise = realiseSeries[realiseSeries.length-1];
@@ -317,7 +377,7 @@ function render(data){
         <div class="chef-stats">
           <div><div class="chef-stat-label">Prévu</div><div class="chef-stat-value">${fmtNum(prevu)} m³</div></div>
           <div><div class="chef-stat-label">Réalisé</div><div class="chef-stat-value">${fmtNum(realise)} m³</div></div>
-          <div><div class="chef-stat-label">Écart</div><div class="chef-stat-value ${ecartChef>=0?'good':'bad'}">${ecartChef>=0?'+':''}${fmtNum(ecartChef)} m³</div></div>
+          <div><div class="chef-stat-label">Reste</div><div class="chef-stat-value ${ecartChef>=0?'good':'bad'}">${ecartChef>=0?'+':''}${fmtNum(ecartChef)} m³</div></div>
           <div><div class="chef-stat-label">Avancement</div><div class="chef-stat-value">${pct.toFixed(1)}%</div></div>
         </div>
         <div class="progress-ring-wrap">
