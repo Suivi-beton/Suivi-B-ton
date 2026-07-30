@@ -147,7 +147,6 @@
     display:grid; grid-template-columns: 300px 1fr; gap: 22px; align-items:center;
   }
   @media(max-width: 900px){ .chef-card{ grid-template-columns: 1fr; } }
-  /* Mode "un seul conducteur filtré" : stats en haut, graphique en dessous, en grand */
   .chef-card.single{
     grid-template-columns: 1fr;
   }
@@ -283,7 +282,7 @@ const DEADLINES = {
 
 // Les graphiques n'affichent l'historique qu'à partir de cette date
 // (les totaux/KPI, eux, restent calculés depuis le tout début du projet)
-const CHART_START_DATE = "2026-07-01";
+const CHART_START_DATE = "2026-01-01";
 
 // Courbe "Prévu" réelle (planning cible hebdomadaire cumulé), extraite de
 // la feuille "P8b-Scénario Cadences" du fichier Planning_Béton.xlsx
@@ -367,6 +366,7 @@ const PLANNING_PREVU = {
 
 let charts = {};
 let lastData = null;
+let lastLatestByPosition = null;
 let selectedChef = 'ALL';
 let selectOptionsBuilt = false;
 
@@ -376,8 +376,6 @@ function fmtNum(n){
 }
 
 function fmtDateShort(iso){
-  // On parse "YYYY-MM-DD" directement en texte, sans passer par un objet Date,
-  // pour éviter tout décalage lié au fuseau horaire du navigateur.
   const parts = String(iso).split('-');
   if(parts.length !== 3) return iso;
   const [y, m, d] = parts;
@@ -389,14 +387,6 @@ function fmtDateFR(isoDate){
   return `${d}/${m}/${y}`;
 }
 
-/**
- * Nombre de jours restants entre aujourd'hui et une date limite (yyyy-MM-dd).
- * Minimum 1 pour éviter une division par zéro si la date est dépassée.
- */
-/**
- * Interpole linéairement la valeur "Prévu" à une date donnée, à partir
- * des points hebdomadaires du planning (PLANNING_PREVU).
- */
 function interpolePrevu(planningPoints, dateISO){
   if(!planningPoints || planningPoints.length === 0) return 0;
   const t = new Date(dateISO + "T00:00:00").getTime();
@@ -416,19 +406,12 @@ function interpolePrevu(planningPoints, dateISO){
   return pts[pts.length-1].value;
 }
 
-/**
- * Cadence (m³/jour) calculée uniquement sur les 7 DERNIERS JOURS
- * CALENDAIRES (pas une moyenne sur N relevés) : compare le dernier
- * point connu à celui d'il y a ~7 jours, et divise par le nombre
- * de jours réellement écoulés entre les deux.
- */
 function calcCadenceDerniereSemaine(chartData, chef){
   if(!chartData || chartData.length < 2) return 0;
   const dernier = chartData[chartData.length-1];
   const dateFin = dernier.dateISO;
   const valFin = dernier.realise[chef] || 0;
 
-  // Cherche le point le plus proche de 7 jours avant le dernier relevé
   const cibleMs = new Date(dateFin + "T00:00:00").getTime() - 7*86400000;
   let ref = chartData[0];
   for(let i=0; i<chartData.length-1; i++){
@@ -457,14 +440,9 @@ function joursRestants(deadlineISO){
   return jours;
 }
 
-/**
- * Cadence cible (m³/jour) nécessaire pour finir le Reste avant la date limite.
- * Se recalcule automatiquement chaque jour (le Reste diminue, les jours
- * restants aussi) — pas de valeur figée à mettre à jour manuellement.
- */
 function calcCadenceCible(reste, deadlineISO){
   const jours = joursRestants(deadlineISO);
-  if(jours <= 0) return reste; // deadline dépassée -> tout reste à faire "aujourd'hui"
+  if(jours <= 0) return reste;
   return reste / jours;
 }
 
@@ -483,13 +461,9 @@ function buildChefSelectOptions(){
 
 function selectChef(chef){
   selectedChef = chef;
-  if(lastData) render(lastData); // ré-affiche instantanément, sans re-fetch
+  if(lastData) render(lastData);
 }
 
-/**
- * Cadence réelle moyenne (m³/jour) calculée sur les N derniers relevés
- * d'une série cumulée donnée.
- */
 function calcCadenceReelle(series, maxPoints){
   maxPoints = maxPoints || 7;
   const n = series.length;
@@ -516,12 +490,16 @@ async function loadData(){
   try{
     const res = await fetch(APPS_SCRIPT_URL, { cache: "no-store" });
     if(!res.ok) throw new Error("HTTP " + res.status);
-    const data = await res.json();
-    if(!Array.isArray(data) || data.length === 0) throw new Error("Aucune donnée reçue (vérifie les noms d'onglets).");
+    const payload = await res.json();
+    if(payload.error) throw new Error(payload.error);
+    if(!payload.series || !Array.isArray(payload.series) || payload.series.length === 0) {
+      throw new Error("Aucune donnée reçue (vérifie les noms d'onglets).");
+    }
 
-    lastData = data; // gardé en mémoire pour filtrer sans re-télécharger
+    lastData = payload.series;
+    lastLatestByPosition = payload.latestByPosition;
     buildChefSelectOptions();
-    render(data);
+    render(lastData);
 
     document.getElementById('loadingBox').style.display = 'none';
     document.getElementById('errorBox').style.display = 'none';
@@ -544,20 +522,24 @@ async function loadData(){
 function render(data){
   document.getElementById('content').dataset.loaded = "1";
 
-  // Liste des conducteurs à prendre en compte : selon le filtre sélectionné
   const chefsAffiches = selectedChef === 'ALL' ? CHEFS : [selectedChef];
 
-  // ---- totaux — filtrés selon le conducteur sélectionné ----
   const totalRealiseSeries = data.map(d => chefsAffiches.reduce((s,c)=> s + (d.realise[c]||0), 0));
-  const totalPrevu = chefsAffiches.reduce((s,c)=> s + (data[data.length-1].prevu[c]||0), 0);
-  const totalRealise = totalRealiseSeries[totalRealiseSeries.length-1];
+  // Vue "Tous les conducteurs" -> on utilise le TOTAL OFFICIEL du Sheet
+  // (cellules T19 / T36), garanti exact, plutôt qu'une somme recalculée
+  // qui pourrait rater des zones non suivies individuellement.
+  // Vue "un conducteur filtré" -> somme (= sa propre valeur, cellule fixe).
+  const totalPrevu = (selectedChef === 'ALL' && lastLatestByPosition && lastLatestByPosition.totalGlobalPrevu !== null && lastLatestByPosition.totalGlobalPrevu !== undefined)
+    ? lastLatestByPosition.totalGlobalPrevu
+    : chefsAffiches.reduce((s,c)=> s + ((lastLatestByPosition && lastLatestByPosition.prevu[c])||0), 0);
+  const totalRealise = (selectedChef === 'ALL' && lastLatestByPosition && lastLatestByPosition.totalGlobalRealise !== null && lastLatestByPosition.totalGlobalRealise !== undefined)
+    ? lastLatestByPosition.totalGlobalRealise
+    : chefsAffiches.reduce((s,c)=> s + ((lastLatestByPosition && lastLatestByPosition.realise[c])||0), 0);
   const avancementGlobal = totalPrevu > 0 ? (totalRealise/totalPrevu*100) : 0;
   const resteGlobal = totalPrevu - totalRealise;
 
-  // Cadence cible = somme des cadences cibles fixes des conducteurs affichés
   const cadenceCibleGlobale = chefsAffiches.reduce((s,c) => s + (CADENCE_CIBLE[c]||0), 0);
 
-  // ---- summary cards — toujours affichées, filtrées selon le conducteur sélectionné ----
   const summaryGrid = document.getElementById('summaryGrid');
   summaryGrid.style.display = '';
   summaryGrid.innerHTML = `
@@ -568,25 +550,20 @@ function render(data){
     ${statCard("Cadence cible", fmtNum(cadenceCibleGlobale), "m³/jour", "Pour tenir les délais")}
   `;
 
-  // ---- per-chef cards (filtrées selon le menu déroulant) ----
   const chefGrid = document.getElementById('chefGrid');
   chefGrid.innerHTML = "";
 
   chefsAffiches.forEach((chef, idx) => {
-    const prevu = data[data.length-1].prevu[chef] || 0;
+    const prevu = (lastLatestByPosition && lastLatestByPosition.prevu[chef]) || 0;
     const realiseSeriesFull = data.map(d => d.realise[chef] || 0);
-    const realise = realiseSeriesFull[realiseSeriesFull.length-1];
+    const realise = (lastLatestByPosition && lastLatestByPosition.realise[chef]) || 0;
     const reste = prevu - realise;
     const pct = prevu>0 ? (realise/prevu*100) : 0;
 
-    // Cadence cible fixe (valeur donnée par toi, inchangée)
     const deadline = DEADLINES[chef];
     const cadenceCible = CADENCE_CIBLE[chef] || 0;
-    // Cadence réelle du conducteur (moyenne des 7 derniers relevés)
     const cadenceReelle = Math.max(0, calcCadenceReelle(realiseSeriesFull, 7));
 
-    // Quand un seul conducteur est filtré, les grandes cartes du haut affichent
-    // déjà les mêmes chiffres -> on n'affiche pas le bloc de stats en double ici
     const afficherStatsCarte = chefsAffiches.length > 1;
 
     const card = document.createElement('div');
@@ -617,42 +594,35 @@ function render(data){
     `;
     chefGrid.appendChild(card);
 
-    // ── Données du graphique : uniquement à partir de CHART_START_DATE ──
     const chartData = data.filter(d => d.dateISO >= CHART_START_DATE);
     const realiseSeries = chartData.map(d => d.realise[chef] || 0);
     const labelsHist = chartData.map(d => fmtDateShort(d.dateISO));
 
-    // Point de départ de la projection = dernier point réel connu
     const lastPoint = chartData.length
       ? { dateISO: chartData[chartData.length-1].dateISO, valeur: realiseSeries[realiseSeries.length-1] }
       : { dateISO: CHART_START_DATE, valeur: 0 };
 
-    // Ajoute un point final "deadline" à l'axe X, pour pouvoir y tracer
-    // la projection (et prolonger la ligne Prévu jusque-là aussi)
     const labels = [...labelsHist, fmtDateShort(deadline)];
 
-    // Prévu : vraie courbe issue du planning (P8b-Scénario Cadences),
-    // interpolée à chaque date affichée + au point deadline
     const planningChef = PLANNING_PREVU[chef] || [];
     const prevuDates = [...chartData.map(d => d.dateISO), deadline];
     const prevuPoints = prevuDates.map(dISO => interpolePrevu(planningChef, dISO));
 
-    // Réalisé : uniquement les vraies valeurs connues, rien sur le point deadline (pas de donnée future)
     const realisePoints = [...realiseSeries, null];
 
-    // Cadence de la DERNIÈRE SEMAINE uniquement (7 derniers jours calendaires,
-    // pas une moyenne sur plusieurs relevés) — utilisée pour la projection
     const cadenceDerniereSemaine = Math.max(0, calcCadenceDerniereSemaine(chartData, chef));
 
-    // Prévu projeté : ligne pointillée UNIQUEMENT entre le dernier point réel
-    // et la deadline, calculée à partir de la cadence de la dernière semaine
     const joursProjection = Math.max(0, joursEntre(lastPoint.dateISO, deadline));
     const valeurProjetee = lastPoint.valeur + cadenceDerniereSemaine * joursProjection;
     const projectePoints = labels.map((lbl, i) => {
-      if(i === labelsHist.length - 1) return lastPoint.valeur; // point de raccord (dernier réel)
-      if(i === labels.length - 1) return valeurProjetee;        // point deadline
+      if(i === labelsHist.length - 1) return lastPoint.valeur;
+      if(i === labels.length - 1) return valeurProjetee;
       return null;
     });
+
+    // Index du dernier point réel connu (pour n'afficher l'étiquette qu'à cet endroit)
+    const dernierIndexReel = labelsHist.length - 1;
+    const dernierIndexGlobal = labels.length - 1;
 
     const ctx = document.getElementById(`chart-${idx}`).getContext('2d');
     if(charts[idx]) charts[idx].destroy();
@@ -668,7 +638,15 @@ function render(data){
             borderDash: [6,4],
             pointRadius: 0,
             borderWidth: 2,
-            tension: 0.1
+            tension: 0.1,
+            datalabels: {
+              display: (ctx) => ctx.dataIndex === dernierIndexGlobal,
+              align: 'top',
+              anchor: 'end',
+              color: CHART_COLORS.prevu,
+              font: { size: 10, weight: '600', family: "'IBM Plex Mono'" },
+              formatter: (v) => fmtNum(v) + ' m³'
+            }
           },
           {
             label: 'Réalisé',
@@ -679,7 +657,15 @@ function render(data){
             pointRadius: 0,
             borderWidth: 2.5,
             tension: 0.25,
-            spanGaps: false
+            spanGaps: false,
+            datalabels: {
+              display: (ctx) => ctx.dataIndex === dernierIndexReel,
+              align: 'bottom',
+              anchor: 'end',
+              color: CHEF_COLORS[chef] || CHART_COLORS.realise,
+              font: { size: 11, weight: '700', family: "'IBM Plex Mono'" },
+              formatter: (v) => fmtNum(v) + ' m³'
+            }
           },
           {
             label: 'Prévu projeté (cadence dernière semaine)',
@@ -690,16 +676,28 @@ function render(data){
             pointRadius: 0,
             borderWidth: 2,
             tension: 0,
-            spanGaps: true
+            spanGaps: true,
+            datalabels: {
+              display: (ctx) => ctx.dataIndex === dernierIndexGlobal,
+              align: 'top',
+              anchor: 'end',
+              color: '#D8433A',
+              font: { size: 10, weight: '600', family: "'IBM Plex Mono'" },
+              formatter: (v) => fmtNum(v) + ' m³'
+            }
           }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        layout: { padding: { top: 20, right: 40 } },
         plugins: {
           legend: { display: true, position: 'top', labels: { color: '#6B7A93', boxWidth: 12, font: { size: 10 } } },
-          tooltip: { mode: 'index', intersect: false }
+          tooltip: {
+            mode: 'index', intersect: false,
+            callbacks: { label: (c) => `${c.dataset.label}: ${fmtNum(c.parsed.y)} m³` }
+          }
         },
         scales: {
           x: { ticks: { color: '#6B7A93', font: { size: 9 }, maxTicksLimit: 8 }, grid: { color: 'rgba(15,27,45,0.05)' } },
